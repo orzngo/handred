@@ -21,6 +21,26 @@
 			"width": 360,
 			"height": 360,
 			"path": "image/mohikan.png"
+		},
+		"NuclearFlame": {
+			"type": "script",
+			"path": "script/NuclearFlame.js",
+			"global": true
+		},
+		"Enemy": {
+			"type": "script",
+			"path": "script/enemy/Enemy.js",
+			"global": true
+		},
+		"Seikimatsu": {
+			"type": "script",
+			"path": "script/enemy/Seikimatsu.js",
+			"global": true
+		},
+		"main": {
+			"type": "script",
+			"path": "script/main.js",
+			"global": true
 		}
 	},
 	"environment": {
