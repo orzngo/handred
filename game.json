@@ -3,7 +3,26 @@
 	"height": 360,
 	"fps": 30,
 	"main": "./script/main.js",
-	"assets": {},
+	"assets": {
+		"hage": {
+			"type": "image",
+			"width": 360,
+			"height": 360,
+			"path": "image/hage.png"
+		},
+		"katapad": {
+			"type": "image",
+			"width": 360,
+			"height": 360,
+			"path": "image/katapad.png"
+		},
+		"mohikan": {
+			"type": "image",
+			"width": 360,
+			"height": 360,
+			"path": "image/mohikan.png"
+		}
+	},
 	"environment": {
 		"sandbox-runtime": "2"
 	}
