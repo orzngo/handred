@@ -1,7 +1,7 @@
 import {Seikimatsu} from "./enemy/Seikimatsu";
 
 function main(param: g.GameMainParameterObject): void {
-    const scene = new g.Scene({game: g.game});
+    const scene = new g.Scene({game: g.game, assetIds:Seikimatsu.enemies});
     const enemyFactory = new Seikimatsu(scene);
     scene.loaded.add(() => {
         // 以下にゲームのロジックを記述します。
