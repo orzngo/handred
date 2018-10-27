@@ -8,21 +8,21 @@ export class Chance extends g.E {
 
     text:string;
 
-    static getText(fake:boolean):string {
-        if (!fake) {
+    static getText(isFake:boolean):string {
+        if (!isFake) {
             return Chance.chances[0][0];
         }
         return Chance.chances[0][g.game.random.get(1, 5)];
 
     }
 
-    constructor(param: g.EParameterObject, font:g.Font, scene:g.Scene, public fake: boolean = false) {
+    constructor(param: g.EParameterObject, font:g.Font, public isFake: boolean = false) {
         super(param);
 
-        const rect = new g.FilledRect({scene, width:80, height:80, cssColor:"white"});
+        const rect = new g.FilledRect({scene:param.scene, width:80, height:80, cssColor:"white"});
         this.append(rect);
-        this.text = Chance.getText(fake);
-        const label = new g.Label({scene, font, text:this.text, fontSize:40});
+        this.text = Chance.getText(isFake);
+        const label = new g.Label({scene:param.scene, font, text:this.text, fontSize:40});
         this.append(label);
         label.y = 20;
     }
