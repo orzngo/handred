@@ -41,6 +41,11 @@
 			"type": "script",
 			"path": "script/main.js",
 			"global": true
+		},
+		"Chance": {
+			"type": "script",
+			"path": "script/Chance.js",
+			"global": true
 		}
 	},
 	"environment": {
