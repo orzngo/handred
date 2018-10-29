@@ -6,9 +6,13 @@ import {NorthStartFist} from "../chance/NorthStarFist";
 declare var console: any;
 
 export class FightScene extends g.Scene {
+    enemyLayer: g.E | undefined;
+    textLayer: g.E | undefined;
+
     currentEnemy: Enemy | undefined;
     currentChances: Chance[] | undefined;
     scoreLabel: g.Label | undefined;
+    comboLabel: g.Label | undefined;
     timeLabel: g.Label | undefined;
     background: g.FilledRect | undefined;
 
@@ -38,6 +42,12 @@ export class FightScene extends g.Scene {
             game: g.game,
             assetIds: Seikimatsu.enemies.concat(["hit1", "hit2", "hit3", "alarm1", "alarm2"])
         });
+
+        this.enemyLayer = new g.E({scene:this});
+        this.append(this.enemyLayer);
+        this.textLayer = new g.E({scene:this});
+        this.append(this.textLayer);
+
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
         this.loaded.add(() => {
@@ -60,16 +70,22 @@ export class FightScene extends g.Scene {
             width: this.game.width,
             height: this.game.height
         });
-        this.append(this.background);
+        this.enemyLayer.append(this.background);
         // TODO: アプリ全体で使い回す？
         const font = new g.DynamicFont({game: g.game, fontFamily: g.FontFamily.Serif, size: 40});
         this.scoreLabel = new g.Label({scene: this, font, text: this.getScoreText(), fontSize: 40});
         this.scoreLabel.y = 0;
-        this.append(this.scoreLabel);
+        this.textLayer.append(this.scoreLabel);
+        this.comboLabel = new g.Label({scene: this, font, text: this.getComboText(), fontSize: 40});
+        this.comboLabel.y = this.game.height - 80;
+        this.comboLabel.x = 70;
+        this.comboLabel.scale(0.5);
+        this.textLayer.append(this.comboLabel);
+
         this.remainingTime = this.DEFAULT_REMAINING_TIME;
         this.timeLabel = new g.Label({scene: this, font, text: this.remainingTime.toString(), fontSize: 40});
         this.timeLabel.x = this.game.width - 100;
-        this.append(this.timeLabel);
+        this.textLayer.append(this.timeLabel);
 
         this.update.add(() => {
             this.mainLoop();
@@ -139,8 +155,14 @@ export class FightScene extends g.Scene {
         }
         this.timeLabel.text = this.remainingTime.toString();
         this.timeLabel.invalidate();
-
-
+        this.comboLabel.text = this.getComboText();
+        if (this.remainingTime % 5 != 0 && this.comboCount > 0) {
+            this.comboLabel.show();
+        } else {
+            this.comboLabel.hide();
+        }
+        this.comboLabel.scale(Math.min(0.5 + (this.comboCount * 0.05), 2.0));
+        this.comboLabel.invalidate();
     }
 
     onClick(e: g.PointDownEvent): void {
@@ -189,7 +211,7 @@ export class FightScene extends g.Scene {
     createEnemy(): void {
         this.currentEnemy = this.enemyFactory.fromLevel(Math.min(Math.floor(this.killCount / 10), this.enemyFactory.maxLevel - 1));
         this.currentEnemy.x = (this.game.width / 2) - this.currentEnemy.width / 2;
-        this.append(this.currentEnemy);
+        this.enemyLayer.append(this.currentEnemy);
     }
 
     removeEnemy(): void {
@@ -209,7 +231,7 @@ export class FightScene extends g.Scene {
 
         this.currentChances = this.chanceFactory.getChancesFromEnemy(this.currentEnemy);
         this.currentChances.forEach((chance) => {
-            this.append(chance);
+            this.enemyLayer.append(chance);
         });
     }
 
@@ -224,7 +246,11 @@ export class FightScene extends g.Scene {
     }
 
     getScoreText(): string {
-        return `score: ${this.game.vars.GameState.score} / ${this.comboCount} Combo!`;
+        return `score: ${this.game.vars.GameState.score}`;
+    }
+
+    getComboText(): string {
+        return `${this.comboCount}HIT!`;
     }
 
 }
