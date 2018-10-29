@@ -1,4 +1,4 @@
-# Handred Punch
+# Hundred Punch
 らんきんぐげーむ :hand:
 
 # 効果音
