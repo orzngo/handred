@@ -29,8 +29,8 @@ export class NorthStartFist {
                 isFake = this.game.random.get(0, 9) >= fakeChance;
             }
             const chance = this.getChance(isFake);
-            chance.x = this.game.random.get(enemy.x, enemy.width - chance.width);
-            chance.y = this.game.random.get(enemy.y, enemy.height - chance.height);
+            chance.x = this.game.random.get(enemy.x - (chance.width / 2), (enemy.x + enemy.width) - (chance.width / 2));
+            chance.y = this.game.random.get(enemy.y - (chance.height / 2), (enemy.y + enemy.height) - (chance.height / 2));
             results.push(chance);
         }
         return results;

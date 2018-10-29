@@ -3,15 +3,26 @@ import {Enemy} from "../enemy/Enemy";
 import {Chance} from "../chance/Chance";
 import {NorthStartFist} from "../chance/NorthStarFist";
 
+declare var console: any;
+
 export class FightScene extends g.Scene {
     currentEnemy: Enemy | undefined;
     currentChances: Chance[] | undefined;
+    scoreLabel: g.Label | undefined;
+    background: g.FilledRect | undefined;
+
+
     enemyFactory: Seikimatsu;
     chanceFactory: NorthStartFist;
 
     isRunning: boolean = false;
+
     hitChance: boolean = false;
     hitFake: Boolean = false;
+
+    comboCount: number = 0;
+    freezeCount: number = 0;
+
 
     constructor() {
         super({
@@ -20,7 +31,6 @@ export class FightScene extends g.Scene {
         });
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
-
         this.loaded.add(() => {
             this.initialize();
         });
@@ -28,6 +38,19 @@ export class FightScene extends g.Scene {
 
     initialize(): void {
         this.game.vars.GameState = {score: 0};
+        this.background = new g.FilledRect({
+            scene: this,
+            cssColor: "gray",
+            width: this.game.width,
+            height: this.game.height
+        });
+        this.append(this.background);
+        // TODO: アプリ全体で使い回す？
+        const font = new g.DynamicFont({game: g.game, fontFamily: g.FontFamily.Serif, size: 40});
+        this.scoreLabel = new g.Label({scene: this, font, text: this.getScoreText(), fontSize: 40});
+        this.scoreLabel.y = 0;
+        this.append(this.scoreLabel);
+
         this.update.add(() => {
             this.mainLoop();
         });
@@ -55,12 +78,23 @@ export class FightScene extends g.Scene {
             this.createChances();
         }
 
+        if (this.currentEnemy.hp <= 0) {
+            this.removeEnemy();
+        }
+
+
         this.hitChance = false;
         this.hitFake = false;
+        if (this.freezeCount === 1) {
+            this.background.cssColor = "gray";
+            this.background.modified();
+        }
+        this.freezeCount--;
+
     }
 
     onClick(e: g.PointDownEvent): void {
-        if (!this.isRunning) {
+        if (!this.isRunning || this.freezeCount > 0) {
             return;
         }
         if (!this.currentEnemy || !this.currentChances) {
@@ -73,31 +107,46 @@ export class FightScene extends g.Scene {
         // 雑な当たり判定
         this.hitFake = true;
         this.currentChances.forEach((chance) => {
-            if (chance.isFake) {
-                return;
-            }
-            if (point.x >= chance.x && point.x <= chance.x + chance.width) {
-                if (point.y >= chance.y && point.y <= chance.y + chance.height) {
-                    this.hitFake = false;
+            if (!chance.isFake) {
+                if (point.x >= chance.x && point.x <= chance.x + chance.width) {
+                    if (point.y >= chance.y && point.y <= chance.y + chance.height) {
+                        this.hitFake = false;
+                    }
                 }
             }
         });
         this.hitChance = !this.hitFake;
+        console.log(this.hitChance, this.hitFake);
     }
 
     attack(): void {
-
+        this.comboCount++;
+        this.currentEnemy.hp -= this.comboCount;
     }
 
     damage(): void {
-
+        this.freezeCount = 60 + this.comboCount;
+        this.comboCount = 0;
+        this.background.cssColor = "red";
+        this.scoreLabel.text = this.getScoreText();
+        this.scoreLabel.invalidate();
+        this.background.modified();
     }
 
 
     createEnemy(): void {
-        this.currentEnemy = this.enemyFactory.fromLevel(0);
+        this.currentEnemy = this.enemyFactory.fromLevel(2);
         this.currentEnemy.x = (this.game.width / 2) - this.currentEnemy.width / 2;
         this.append(this.currentEnemy);
+    }
+
+    removeEnemy(): void {
+        this.currentEnemy.destroy();
+        // 1 + (オーバーキル分 * (level +1))がスコアとしてもらえる
+        this.game.vars.GameState.score += 1 + (-this.currentEnemy.hp * (this.currentEnemy.level + 1));
+        this.scoreLabel.text = this.getScoreText();
+        this.scoreLabel.invalidate();
+        this.currentEnemy = undefined;
     }
 
     createChances(): void {
@@ -119,6 +168,10 @@ export class FightScene extends g.Scene {
             chance.destroy();
         });
         this.currentChances = undefined;
+    }
+
+    getScoreText(): string {
+        return `score: ${this.game.vars.GameState.score}\n${this.comboCount} Combo!`;
     }
 
 }
