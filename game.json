@@ -44,7 +44,17 @@
 		},
 		"Chance": {
 			"type": "script",
-			"path": "script/Chance.js",
+			"path": "script/chance/Chance.js",
+			"global": true
+		},
+		"NorthStarFist": {
+			"type": "script",
+			"path": "script/chance/NorthStarFist.js",
+			"global": true
+		},
+		"FightScene": {
+			"type": "script",
+			"path": "script/scene/FightScene.js",
 			"global": true
 		}
 	},
