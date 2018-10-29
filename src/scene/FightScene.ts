@@ -22,6 +22,9 @@ export class FightScene extends g.Scene {
 
     comboCount: number = 0;
     freezeCount: number = 0;
+    enemyDyingCount: number = 0;
+
+    killCount: number = 0;
 
 
     constructor() {
@@ -74,11 +77,21 @@ export class FightScene extends g.Scene {
             this.damage();
         }
 
-        if ((this.hitChance || this.hitFake) && this.currentEnemy.hp > 0) {
+        if (this.hitChance && this.currentEnemy.hp > 0) {
             this.createChances();
         }
 
-        if (this.currentEnemy.hp <= 0) {
+        if (this.currentEnemy.hp <= 0 && this.enemyDyingCount <= 0) {
+            this.enemyDyingCount = 10;
+            this.removeChances();
+        }
+
+        if (this.enemyDyingCount > 0) {
+            this.currentEnemy.scale(this.enemyDyingCount / 10);
+            this.currentEnemy.modified();
+        }
+
+        if (this.enemyDyingCount === 1) {
             this.removeEnemy();
         }
 
@@ -88,9 +101,14 @@ export class FightScene extends g.Scene {
         if (this.freezeCount === 1) {
             this.background.cssColor = "gray";
             this.background.modified();
+            this.currentEnemy.scale(1);
+            this.createChances();
+        } else if (this.freezeCount > 0) {
+            this.currentEnemy.scale(1.2);
+            this.currentEnemy.modified();
         }
         this.freezeCount--;
-
+        this.enemyDyingCount--;
     }
 
     onClick(e: g.PointDownEvent): void {
@@ -135,7 +153,7 @@ export class FightScene extends g.Scene {
 
 
     createEnemy(): void {
-        this.currentEnemy = this.enemyFactory.fromLevel(2);
+        this.currentEnemy = this.enemyFactory.fromLevel(Math.min(Math.floor(this.killCount / 10), this.enemyFactory.maxLevel - 1));
         this.currentEnemy.x = (this.game.width / 2) - this.currentEnemy.width / 2;
         this.append(this.currentEnemy);
     }
@@ -146,6 +164,7 @@ export class FightScene extends g.Scene {
         this.game.vars.GameState.score += 1 + (-this.currentEnemy.hp * (this.currentEnemy.level + 1));
         this.scoreLabel.text = this.getScoreText();
         this.scoreLabel.invalidate();
+        this.killCount++;
         this.currentEnemy = undefined;
     }
 
@@ -171,7 +190,7 @@ export class FightScene extends g.Scene {
     }
 
     getScoreText(): string {
-        return `score: ${this.game.vars.GameState.score}\n${this.comboCount} Combo!`;
+        return `score: ${this.game.vars.GameState.score} / ${this.comboCount} Combo!`;
     }
 
 }
