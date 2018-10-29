@@ -4,7 +4,7 @@ import {Enemy} from "./Enemy";
 import {NuClearFlame} from "../NuclearFlame";
 
 export class Seikimatsu {
-    static enemies = ["hage", "mohikan", "katapad", "katapad", "katapad", "katapad"];
+    static enemies = ["hage", "mohikan", "katapad", "weapon", "kenpou", "boss", "boss", "boss", "boss", "boss"];
 
     constructor(public scene: g.Scene) {
 

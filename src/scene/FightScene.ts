@@ -30,7 +30,7 @@ export class FightScene extends g.Scene {
     constructor() {
         super({
             game: g.game,
-            assetIds: Seikimatsu.enemies
+            assetIds: Seikimatsu.enemies.concat(["bell", "hit1", "hit2", "hit3"])
         });
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
@@ -82,6 +82,7 @@ export class FightScene extends g.Scene {
         }
 
         if (this.currentEnemy.hp <= 0 && this.enemyDyingCount <= 0) {
+            (this.assets["hit3"] as g.AudioAsset).play();
             this.enemyDyingCount = 10;
             this.removeChances();
         }
@@ -138,11 +139,13 @@ export class FightScene extends g.Scene {
     }
 
     attack(): void {
+        (this.assets["hit2"] as g.AudioAsset).play();
         this.comboCount++;
         this.currentEnemy.hp -= this.comboCount;
     }
 
     damage(): void {
+        (this.assets["hit3"] as g.AudioAsset).play();
         this.freezeCount = 60 + this.comboCount;
         this.comboCount = 0;
         this.background.cssColor = "red";
@@ -160,8 +163,8 @@ export class FightScene extends g.Scene {
 
     removeEnemy(): void {
         this.currentEnemy.destroy();
-        // 1 + (オーバーキル分 * (level +1))がスコアとしてもらえる
-        this.game.vars.GameState.score += 1 + (-this.currentEnemy.hp * (this.currentEnemy.level + 1));
+        // 1 + (オーバーキル分 * (level +1)^2)がスコアとしてもらえる
+        this.game.vars.GameState.score += 1 + (-this.currentEnemy.hp * (this.currentEnemy.level + 1) * (this.currentEnemy.level + 1));
         this.scoreLabel.text = this.getScoreText();
         this.scoreLabel.invalidate();
         this.killCount++;

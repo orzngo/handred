@@ -56,6 +56,48 @@
 			"type": "script",
 			"path": "script/scene/FightScene.js",
 			"global": true
+		},
+		"boss": {
+			"type": "image",
+			"width": 360,
+			"height": 360,
+			"path": "image/boss.png"
+		},
+		"kenpou": {
+			"type": "image",
+			"width": 360,
+			"height": 360,
+			"path": "image/kenpou.png"
+		},
+		"weapon": {
+			"type": "image",
+			"width": 360,
+			"height": 360,
+			"path": "image/weapon.png"
+		},
+		"bell": {
+			"type": "audio",
+			"path": "audio/bell",
+			"systemId": "sound",
+			"duration": 440
+		},
+		"hit1": {
+			"type": "audio",
+			"path": "audio/hit1",
+			"systemId": "sound",
+			"duration": 540
+		},
+		"hit2": {
+			"type": "audio",
+			"path": "audio/hit2",
+			"systemId": "sound",
+			"duration": 460
+		},
+		"hit3": {
+			"type": "audio",
+			"path": "audio/hit3",
+			"systemId": "sound",
+			"duration": 500
 		}
 	},
 	"environment": {
