@@ -98,9 +98,27 @@
 			"path": "audio/hit3",
 			"systemId": "sound",
 			"duration": 500
+		},
+		"alarm1": {
+			"type": "audio",
+			"path": "audio/alarm1",
+			"systemId": "sound",
+			"duration": 1490
+		},
+		"alarm2": {
+			"type": "audio",
+			"path": "audio/alarm2",
+			"systemId": "sound",
+			"duration": 1910
 		}
 	},
 	"environment": {
-		"sandbox-runtime": "2"
+		"sandbox-runtime": "2",
+		"niconico": {
+			"supportedModes": [
+				"single",
+				"ranking"
+			]
+		}
 	}
 }

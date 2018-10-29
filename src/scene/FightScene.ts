@@ -9,7 +9,11 @@ export class FightScene extends g.Scene {
     currentEnemy: Enemy | undefined;
     currentChances: Chance[] | undefined;
     scoreLabel: g.Label | undefined;
+    timeLabel: g.Label | undefined;
     background: g.FilledRect | undefined;
+
+
+    DEFAULT_REMAINING_TIME: number = 60 * 30;
 
 
     enemyFactory: Seikimatsu;
@@ -26,16 +30,25 @@ export class FightScene extends g.Scene {
 
     killCount: number = 0;
 
+    remainingTime: number = 0;
+
 
     constructor() {
         super({
             game: g.game,
-            assetIds: Seikimatsu.enemies.concat(["bell", "hit1", "hit2", "hit3"])
+            assetIds: Seikimatsu.enemies.concat(["hit1", "hit2", "hit3", "alarm1", "alarm2"])
         });
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
         this.loaded.add(() => {
             this.initialize();
+        });
+        this.message.add((e) => {
+            if (e.data && e.data.type === "start") {
+                this.remainingTime = e.data.parameters.gameTimeLimit * 30;
+                this.isRunning = true;
+                (this.assets["alarm2"] as g.AudioAsset).play();
+            }
         });
     }
 
@@ -53,6 +66,10 @@ export class FightScene extends g.Scene {
         this.scoreLabel = new g.Label({scene: this, font, text: this.getScoreText(), fontSize: 40});
         this.scoreLabel.y = 0;
         this.append(this.scoreLabel);
+        this.remainingTime = this.DEFAULT_REMAINING_TIME;
+        this.timeLabel = new g.Label({scene: this, font, text: this.remainingTime.toString(), fontSize: 40});
+        this.timeLabel.x = this.game.width - 100;
+        this.append(this.timeLabel);
 
         this.update.add(() => {
             this.mainLoop();
@@ -60,13 +77,16 @@ export class FightScene extends g.Scene {
         this.pointDownCapture.add((e) => {
             this.onClick(e);
         });
+
+        // debug
+        this.isRunning = true;
+        (this.assets["alarm2"] as g.AudioAsset).play();
     }
 
     mainLoop(): void {
         if (!this.currentEnemy) {
             this.createEnemy();
             this.createChances();
-            this.isRunning = true;
         }
 
         if (this.hitChance) {
@@ -110,6 +130,17 @@ export class FightScene extends g.Scene {
         }
         this.freezeCount--;
         this.enemyDyingCount--;
+        if (this.remainingTime > 0) {
+            this.remainingTime--;
+        }
+        if (this.remainingTime === 1) {
+            this.isRunning = false;
+            (this.assets["alarm1"] as g.AudioAsset).play();
+        }
+        this.timeLabel.text = this.remainingTime.toString();
+        this.timeLabel.invalidate();
+
+
     }
 
     onClick(e: g.PointDownEvent): void {
