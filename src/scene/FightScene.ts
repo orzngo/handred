@@ -43,6 +43,8 @@ export class FightScene extends g.Scene {
     timeLimit: number = 0;
     remainingTime: number = 0;
 
+    parameters:any;
+
     constructor() {
         super({
             game: g.game,
@@ -66,6 +68,9 @@ export class FightScene extends g.Scene {
         } else {
             this.message.add((e) => {
                 if (e.data && e.data.type === "start") {
+                    if (e.data.parameters) {
+                        this.parameters = e.data.parameters;
+                    }
                     this.initialize(e.data.parameters.gameTimeLimit * 30);
                 }
             });
