@@ -104,6 +104,16 @@
 			"path": "audio/alarm2",
 			"systemId": "sound",
 			"duration": 1910
+		},
+		"Background": {
+			"type": "script",
+			"path": "script/Background.js",
+			"global": true
+		},
+		"ComboCounter": {
+			"type": "script",
+			"path": "script/ComboCounter.js",
+			"global": true
 		}
 	},
 	"environment": {

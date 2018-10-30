@@ -2,6 +2,8 @@ import {Seikimatsu} from "../enemy/Seikimatsu";
 import {Enemy} from "../enemy/Enemy";
 import {Chance} from "../chance/Chance";
 import {NorthStartFist} from "../chance/NorthStarFist";
+import {Background} from "../Background";
+import {ComboCounter} from "../ComboCounter";
 
 declare var console: any;
 
@@ -13,9 +15,9 @@ export class FightScene extends g.Scene {
     currentEnemy: Enemy | undefined;
     currentChances: Chance[] | undefined;
     scoreLabel: g.Label | undefined;
-    comboLabel: g.Label | undefined;
+    comboLabel: ComboCounter | undefined;
     timeLabel: g.Label | undefined;
-    background: g.FilledRect | undefined;
+    background: Background | undefined;
 
 
     DEFAULT_REMAINING_TIME: number = 60 * 30;
@@ -71,13 +73,7 @@ export class FightScene extends g.Scene {
 
     initialize(): void {
         this.game.vars.GameState = {score: 0};
-        this.background = new g.FilledRect({
-            scene: this,
-            cssColor: "rgba(128,128,128,0.8)",
-            width: this.game.width,
-            height: this.game.height
-        });
-        this.modified();
+        this.background = new Background({scene: this});
 
         this.enemyLayer.append(this.background);
         // TODO: アプリ全体で使い回す？
@@ -91,10 +87,9 @@ export class FightScene extends g.Scene {
         this.scoreLabel = new g.Label({scene: this, font, text: this.getScoreText(), fontSize: 40});
         this.scoreLabel.y = 0;
         this.textLayer.append(this.scoreLabel);
-        this.comboLabel = new g.Label({scene: this, font, text: this.getComboText(), fontSize: 40});
+        this.comboLabel = new ComboCounter({scene: this});
         this.comboLabel.y = this.game.height - 80;
         this.comboLabel.x = 70;
-        this.comboLabel.scale(0.5);
         this.textLayer.append(this.comboLabel);
 
         this.timeLimit = this.DEFAULT_REMAINING_TIME;
@@ -177,8 +172,7 @@ export class FightScene extends g.Scene {
         this.hitChance = false;
         this.hitFake = false;
         if (this.freezeCount === 1) {
-            this.background.cssColor = "rgba(128,128,128,0.8)";
-            this.background.modified();
+            this.background.stopDamagedEffect();
             this.currentEnemy.scale(1);
             this.createChances();
         } else if (this.freezeCount > 0) {
@@ -196,14 +190,7 @@ export class FightScene extends g.Scene {
         }
         this.timeLabel.text = this.remainingTime.toString();
         this.timeLabel.invalidate();
-        this.comboLabel.text = this.getComboText();
-        if (this.remainingTime % 5 != 0 && this.comboCount > 0) {
-            this.comboLabel.show();
-        } else {
-            this.comboLabel.hide();
-        }
-        this.comboLabel.scale(Math.min(0.5 + (this.comboCount * 0.05), 2.0));
-        this.comboLabel.invalidate();
+        this.comboLabel.setCombo(this.comboCount);
         this.sceneTime++;
     }
 
@@ -221,11 +208,10 @@ export class FightScene extends g.Scene {
         // 雑な当たり判定
         this.hitFake = true;
         this.currentChances.forEach((chance) => {
-            if (!chance.isFake) {
-                if (point.x >= chance.x && point.x <= chance.x + chance.width) {
-                    if (point.y >= chance.y && point.y <= chance.y + chance.height) {
-                        this.hitFake = false;
-                    }
+            if (point.x >= chance.x && point.x <= chance.x + chance.width) {
+                if (point.y >= chance.y && point.y <= chance.y + chance.height) {
+                    this.hitFake = chance.isFake;
+                    chance.hit();
                 }
             }
         });
@@ -243,10 +229,9 @@ export class FightScene extends g.Scene {
         (this.assets["hit3"] as g.AudioAsset).play();
         this.freezeCount = 60 + this.comboCount;
         this.comboCount = 0;
-        this.background.cssColor = "rgba(192,0,0,0.8)";
+        this.background.startDamagedEffect();
         this.scoreLabel.text = this.getScoreText();
         this.scoreLabel.invalidate();
-        this.background.modified();
     }
 
 
@@ -290,9 +275,4 @@ export class FightScene extends g.Scene {
     getScoreText(): string {
         return `score: ${this.game.vars.GameState.score}`;
     }
-
-    getComboText(): string {
-        return `${this.comboCount}HIT!`;
-    }
-
 }
