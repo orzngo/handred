@@ -4,6 +4,7 @@ import {Chance} from "../chance/Chance";
 import {NorthStartFist} from "../chance/NorthStarFist";
 import {Background} from "../Background";
 import {ComboCounter} from "../ComboCounter";
+import {ChibaShigeru} from "../ChibaShigeru";
 
 declare var console: any;
 
@@ -18,6 +19,7 @@ export class FightScene extends g.Scene {
     comboLabel: ComboCounter | undefined;
     timeLabel: g.Label | undefined;
     background: Background | undefined;
+    firstDescription: ChibaShigeru | undefined;
 
 
     DEFAULT_REMAINING_TIME: number = 60 * 30;
@@ -97,26 +99,8 @@ export class FightScene extends g.Scene {
         this.timeLabel.x = this.game.width - 100;
         this.textLayer.append(this.timeLabel);
 
-        const manual = new g.Label({scene: this, font, text: "スキを突いて", fontSize: 100});
-        const manual2 = new g.Label({scene: this, font, text: "倒せ！！！", fontSize: 100});
-        manual.y = (this.game.height / 2) - 100;
-        manual2.y = manual.y + 100;
-        this.topLayer.append(new g.FilledRect({
-            scene: this,
-            cssColor: "rgba(192,192,192,0.9)",
-            width: this.game.width,
-            height: this.game.height
-        }));
-        this.topLayer.append(manual);
-        this.topLayer.append(manual2);
-        this.progressbar = new g.FilledRect({
-            scene: this,
-            cssColor: "rgba(255,255,0,1)",
-            width: this.game.width,
-            height: 50
-        });
-        this.progressbar.y = this.game.height - 50;
-        this.topLayer.append(this.progressbar);
+        this.firstDescription = new ChibaShigeru({scene: this}, 30 * 5);
+        this.topLayer.append(this.firstDescription);
 
         this.update.add(() => {
             this.mainLoop();
@@ -127,12 +111,9 @@ export class FightScene extends g.Scene {
     }
 
     mainLoop(): void {
-        if (this.sceneTime < 30 * 5) {
-            this.progressbar.width = (this.game.width * ((30 * 5) - this.sceneTime)) / (30 * 5);
-        } else if (this.sceneTime === 30 * 5) {
+        if (this.sceneTime === 30 * 5) {
             (this.assets["alarm2"] as g.AudioAsset).play();
             this.isRunning = true;
-            this.topLayer.destroy();
             this.remainingTime = this.timeLimit;
         }
 

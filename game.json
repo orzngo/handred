@@ -114,6 +114,11 @@
 			"type": "script",
 			"path": "script/ComboCounter.js",
 			"global": true
+		},
+		"ChibaShigeru": {
+			"type": "script",
+			"path": "script/ChibaShigeru.js",
+			"global": true
 		}
 	},
 	"environment": {
