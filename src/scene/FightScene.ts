@@ -7,6 +7,7 @@ import {ComboCounter} from "../ComboCounter";
 import {ChibaShigeru} from "../ChibaShigeru";
 
 declare var console: any;
+declare var window:any;
 
 export class FightScene extends g.Scene {
     enemyLayer: g.E | undefined;
@@ -43,9 +44,6 @@ export class FightScene extends g.Scene {
     timeLimit: number = 0;
     remainingTime: number = 0;
 
-    progressbar: g.FilledRect | undefined;
-
-
     constructor() {
         super({
             game: g.game,
@@ -61,19 +59,21 @@ export class FightScene extends g.Scene {
 
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
-        this.loaded.add(() => {
-            this.initialize();
-        });
-        this.message.add((e) => {
-            if (e.data && e.data.type === "start") {
-                this.remainingTime = e.data.parameters.gameTimeLimit * 30;
-                this.isRunning = true;
-                (this.assets["alarm2"] as g.AudioAsset).play();
-            }
-        });
+
+        if (this.game.vars.isAtsumaru) {
+            this.message.add((e) => {
+                if (e.data && e.data.type === "start") {
+                    this.initialize(e.data.parameters.gameTimeLimit * 30);
+                }
+            });
+        } else {
+            this.loaded.add(() => {
+                this.initialize();
+            });
+        }
     }
 
-    initialize(): void {
+    initialize(timeLimit:number = this.DEFAULT_REMAINING_TIME): void {
         this.game.vars.GameState = {score: 0};
         this.background = new Background({scene: this});
 
@@ -88,13 +88,14 @@ export class FightScene extends g.Scene {
         });
         this.scoreLabel = new g.Label({scene: this, font, text: this.getScoreText(), fontSize: 40});
         this.scoreLabel.y = 0;
+        this.textLayer.append(scoreBackground);
         this.textLayer.append(this.scoreLabel);
         this.comboLabel = new ComboCounter({scene: this});
         this.comboLabel.y = this.game.height - 80;
         this.comboLabel.x = 70;
         this.textLayer.append(this.comboLabel);
 
-        this.timeLimit = this.DEFAULT_REMAINING_TIME;
+        this.timeLimit = timeLimit;
         this.timeLabel = new g.Label({scene: this, font, text: this.remainingTime.toString(), fontSize: 40});
         this.timeLabel.x = this.game.width - 100;
         this.textLayer.append(this.timeLabel);
@@ -168,6 +169,12 @@ export class FightScene extends g.Scene {
         if (this.remainingTime === 1) {
             this.isRunning = false;
             (this.assets["alarm1"] as g.AudioAsset).play();
+            if (this.game.vars.isAtsumaru) {
+                window.RPGAtsumaru.experimental.scoreboards.setRecord(1, this.game.vars.GameState.score);
+                this.setTimeout(()=>{
+                    window.RPGAtsumaru.experimental.scoreboards.display(1);
+                },3000);
+            }
         }
         this.timeLabel.text = this.remainingTime.toString();
         this.timeLabel.invalidate();
