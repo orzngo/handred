@@ -60,14 +60,14 @@ export class FightScene extends g.Scene {
         this.chanceFactory = new NorthStartFist(g.game, this);
 
         if (this.game.vars.isAtsumaru) {
+            this.loaded.add(() => {
+                this.initialize();
+            });
+        } else {
             this.message.add((e) => {
                 if (e.data && e.data.type === "start") {
                     this.initialize(e.data.parameters.gameTimeLimit * 30);
                 }
-            });
-        } else {
-            this.loaded.add(() => {
-                this.initialize();
             });
         }
     }
