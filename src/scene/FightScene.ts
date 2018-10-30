@@ -43,9 +43,9 @@ export class FightScene extends g.Scene {
             assetIds: Seikimatsu.enemies.concat(["hit1", "hit2", "hit3", "alarm1", "alarm2"])
         });
 
-        this.enemyLayer = new g.E({scene:this});
+        this.enemyLayer = new g.E({scene: this});
         this.append(this.enemyLayer);
-        this.textLayer = new g.E({scene:this});
+        this.textLayer = new g.E({scene: this});
         this.append(this.textLayer);
 
         this.enemyFactory = new Seikimatsu(this);
@@ -70,6 +70,9 @@ export class FightScene extends g.Scene {
             width: this.game.width,
             height: this.game.height
         });
+        this.background.cssColor = "rgba(64,64,64,0.5)";
+        this.modified();
+
         this.enemyLayer.append(this.background);
         // TODO: アプリ全体で使い回す？
         const font = new g.DynamicFont({game: g.game, fontFamily: g.FontFamily.Serif, size: 40});
@@ -136,7 +139,7 @@ export class FightScene extends g.Scene {
         this.hitChance = false;
         this.hitFake = false;
         if (this.freezeCount === 1) {
-            this.background.cssColor = "gray";
+            this.background.cssColor = "rgba(64,64,64,0.5)";
             this.background.modified();
             this.currentEnemy.scale(1);
             this.createChances();
@@ -201,7 +204,7 @@ export class FightScene extends g.Scene {
         (this.assets["hit3"] as g.AudioAsset).play();
         this.freezeCount = 60 + this.comboCount;
         this.comboCount = 0;
-        this.background.cssColor = "red";
+        this.background.cssColor = "rgba(192,0,0,0.5)";
         this.scoreLabel.text = this.getScoreText();
         this.scoreLabel.invalidate();
         this.background.modified();

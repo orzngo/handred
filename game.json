@@ -75,12 +75,6 @@
 			"height": 360,
 			"path": "image/weapon.png"
 		},
-		"bell": {
-			"type": "audio",
-			"path": "audio/bell",
-			"systemId": "sound",
-			"duration": 440
-		},
 		"hit1": {
 			"type": "audio",
 			"path": "audio/hit1",
