@@ -8,6 +8,7 @@ declare var console: any;
 export class FightScene extends g.Scene {
     enemyLayer: g.E | undefined;
     textLayer: g.E | undefined;
+    topLayer: g.E | undefined;
 
     currentEnemy: Enemy | undefined;
     currentChances: Chance[] | undefined;
@@ -34,7 +35,11 @@ export class FightScene extends g.Scene {
 
     killCount: number = 0;
 
+    sceneTime: number = 0;
+    timeLimit: number = 0;
     remainingTime: number = 0;
+
+    progressbar: g.FilledRect | undefined;
 
 
     constructor() {
@@ -47,6 +52,8 @@ export class FightScene extends g.Scene {
         this.append(this.enemyLayer);
         this.textLayer = new g.E({scene: this});
         this.append(this.textLayer);
+        this.topLayer = new g.E({scene: this});
+        this.append(this.topLayer);
 
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
@@ -66,11 +73,10 @@ export class FightScene extends g.Scene {
         this.game.vars.GameState = {score: 0};
         this.background = new g.FilledRect({
             scene: this,
-            cssColor: "gray",
+            cssColor: "rgba(64,64,64,0.5)",
             width: this.game.width,
             height: this.game.height
         });
-        this.background.cssColor = "rgba(64,64,64,0.5)";
         this.modified();
 
         this.enemyLayer.append(this.background);
@@ -85,10 +91,31 @@ export class FightScene extends g.Scene {
         this.comboLabel.scale(0.5);
         this.textLayer.append(this.comboLabel);
 
-        this.remainingTime = this.DEFAULT_REMAINING_TIME;
+        this.timeLimit = this.DEFAULT_REMAINING_TIME;
         this.timeLabel = new g.Label({scene: this, font, text: this.remainingTime.toString(), fontSize: 40});
         this.timeLabel.x = this.game.width - 100;
         this.textLayer.append(this.timeLabel);
+
+        const manual = new g.Label({scene: this, font, text: "スキを突いて", fontSize: 100});
+        const manual2 = new g.Label({scene: this, font, text: "倒せ！！！", fontSize: 100});
+        manual.y = (this.game.height / 2) - 100;
+        manual2.y = manual.y + 100;
+        this.topLayer.append(new g.FilledRect({
+            scene: this,
+            cssColor: "rgba(192,192,192,0.9)",
+            width: this.game.width,
+            height: this.game.height
+        }));
+        this.topLayer.append(manual);
+        this.topLayer.append(manual2);
+        this.progressbar = new g.FilledRect({
+            scene: this,
+            cssColor: "rgba(255,255,0,1)",
+            width: this.game.width,
+            height: 50
+        });
+        this.progressbar.y = this.game.height - 50;
+        this.topLayer.append(this.progressbar);
 
         this.update.add(() => {
             this.mainLoop();
@@ -96,13 +123,18 @@ export class FightScene extends g.Scene {
         this.pointDownCapture.add((e) => {
             this.onClick(e);
         });
-
-        // debug
-        this.isRunning = true;
-        (this.assets["alarm2"] as g.AudioAsset).play();
     }
 
     mainLoop(): void {
+        if (this.sceneTime < 30 * 5) {
+            this.progressbar.width = (this.game.width * ((30 * 5) - this.sceneTime)) / (30 * 5);
+        } else if (this.sceneTime === 30 * 5) {
+            (this.assets["alarm2"] as g.AudioAsset).play();
+            this.isRunning = true;
+            this.topLayer.destroy();
+            this.remainingTime = this.timeLimit;
+        }
+
         if (!this.currentEnemy) {
             this.createEnemy();
             this.createChances();
@@ -166,6 +198,7 @@ export class FightScene extends g.Scene {
         }
         this.comboLabel.scale(Math.min(0.5 + (this.comboCount * 0.05), 2.0));
         this.comboLabel.invalidate();
+        this.sceneTime++;
     }
 
     onClick(e: g.PointDownEvent): void {
