@@ -73,7 +73,7 @@ export class FightScene extends g.Scene {
         this.game.vars.GameState = {score: 0};
         this.background = new g.FilledRect({
             scene: this,
-            cssColor: "rgba(64,64,64,0.5)",
+            cssColor: "rgba(128,128,128,0.8)",
             width: this.game.width,
             height: this.game.height
         });
@@ -82,6 +82,12 @@ export class FightScene extends g.Scene {
         this.enemyLayer.append(this.background);
         // TODO: アプリ全体で使い回す？
         const font = new g.DynamicFont({game: g.game, fontFamily: g.FontFamily.Serif, size: 40});
+        const scoreBackground = new g.FilledRect({
+            scene: this,
+            cssColor: "rgba(192,192,192,0.5)",
+            width: this.game.width,
+            height: 40
+        });
         this.scoreLabel = new g.Label({scene: this, font, text: this.getScoreText(), fontSize: 40});
         this.scoreLabel.y = 0;
         this.textLayer.append(this.scoreLabel);
@@ -171,7 +177,7 @@ export class FightScene extends g.Scene {
         this.hitChance = false;
         this.hitFake = false;
         if (this.freezeCount === 1) {
-            this.background.cssColor = "rgba(64,64,64,0.5)";
+            this.background.cssColor = "rgba(128,128,128,0.8)";
             this.background.modified();
             this.currentEnemy.scale(1);
             this.createChances();
@@ -237,7 +243,7 @@ export class FightScene extends g.Scene {
         (this.assets["hit3"] as g.AudioAsset).play();
         this.freezeCount = 60 + this.comboCount;
         this.comboCount = 0;
-        this.background.cssColor = "rgba(192,0,0,0.5)";
+        this.background.cssColor = "rgba(192,0,0,0.8)";
         this.scoreLabel.text = this.getScoreText();
         this.scoreLabel.invalidate();
         this.background.modified();
