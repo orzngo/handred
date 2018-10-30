@@ -6,7 +6,6 @@ import {Background} from "../Background";
 import {ComboCounter} from "../ComboCounter";
 import {ChibaShigeru} from "../ChibaShigeru";
 
-declare var console: any;
 declare var window:any;
 
 export class FightScene extends g.Scene {
@@ -207,7 +206,6 @@ export class FightScene extends g.Scene {
             }
         });
         this.hitChance = !this.hitFake;
-        console.log(this.hitChance, this.hitFake);
     }
 
     attack(): void {
