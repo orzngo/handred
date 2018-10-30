@@ -191,7 +191,10 @@ export class FightScene extends g.Scene {
         this.currentChances.forEach((chance) => {
             if (point.x >= chance.x && point.x <= chance.x + chance.width) {
                 if (point.y >= chance.y && point.y <= chance.y + chance.height) {
-                    this.hitFake = chance.isFake;
+                    // 一度でも本物に的中判定が出たら、そのフレームでは的中とみなす
+                    if (this.hitFake) {
+                        this.hitFake = chance.isFake;
+                    }
                     chance.hit();
                 }
             }
