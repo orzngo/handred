@@ -78,7 +78,7 @@ export class FightScene extends g.Scene {
     }
 
     initialize(timeLimit:number = this.DEFAULT_REMAINING_TIME): void {
-        this.game.vars.GameState = {score: 0};
+        this.game.vars.gameState = {score: 0};
         this.background = new Background({scene: this});
 
         this.enemyLayer.append(this.background);
@@ -174,7 +174,7 @@ export class FightScene extends g.Scene {
             this.isRunning = false;
             (this.assets["alarm1"] as g.AudioAsset).play();
             if (this.game.vars.isAtsumaru) {
-                window.RPGAtsumaru.experimental.scoreboards.setRecord(1, this.game.vars.GameState.score);
+                window.RPGAtsumaru.experimental.scoreboards.setRecord(1, this.game.vars.gameState.score);
                 this.setTimeout(()=>{
                     window.RPGAtsumaru.experimental.scoreboards.display(1);
                 },3000);
@@ -238,7 +238,7 @@ export class FightScene extends g.Scene {
     removeEnemy(): void {
         this.currentEnemy.destroy();
         // 1 + (オーバーキル分 * (level +1)^2)がスコアとしてもらえる
-        this.game.vars.GameState.score += 1 + (-this.currentEnemy.hp * (this.currentEnemy.level + 1) * (this.currentEnemy.level + 1));
+        this.game.vars.gameState.score += 1 + (-this.currentEnemy.hp * (this.currentEnemy.level + 1) * (this.currentEnemy.level + 1));
         this.scoreLabel.text = this.getScoreText();
         this.scoreLabel.invalidate();
         this.killCount++;
@@ -267,6 +267,6 @@ export class FightScene extends g.Scene {
     }
 
     getScoreText(): string {
-        return `score: ${this.game.vars.GameState.score}`;
+        return `score: ${this.game.vars.gameState.score}`;
     }
 }
