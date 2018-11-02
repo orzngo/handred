@@ -36,9 +36,6 @@ export class Chance extends g.E {
         this.width = this.background.width;
         this.height = this.background.height;
 
-        this.update.add(() => {
-            this.onUpdate();
-        });
     }
 
     hit(): void {

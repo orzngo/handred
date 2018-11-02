@@ -6,7 +6,7 @@ import {Background} from "../Background";
 import {ComboCounter} from "../ComboCounter";
 import {ChibaShigeru} from "../ChibaShigeru";
 
-declare var window:any;
+declare var window: any;
 
 export class FightScene extends g.Scene {
     enemyLayer: g.E | undefined;
@@ -43,7 +43,7 @@ export class FightScene extends g.Scene {
     timeLimit: number = 0;
     remainingTime: number = 0;
 
-    parameters:any;
+    parameters: any;
 
     constructor() {
         super({
@@ -61,6 +61,7 @@ export class FightScene extends g.Scene {
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
 
+        /*
         if (this.game.vars.isAtsumaru) {
             this.loaded.add(() => {
                 this.initialize();
@@ -75,9 +76,12 @@ export class FightScene extends g.Scene {
                 }
             });
         }
+*/
+
+        this.initialize(this.DEFAULT_REMAINING_TIME);
     }
 
-    initialize(timeLimit:number = this.DEFAULT_REMAINING_TIME): void {
+    initialize(timeLimit: number = this.DEFAULT_REMAINING_TIME): void {
         this.game.vars.gameState = {score: 0};
         this.background = new Background({scene: this});
 
@@ -154,6 +158,12 @@ export class FightScene extends g.Scene {
             this.removeEnemy();
         }
 
+        if (this.currentChances) {
+            this.currentChances.forEach((chance) => {
+                chance.onUpdate();
+            });
+        }
+
 
         this.hitChance = false;
         this.hitFake = false;
@@ -175,9 +185,9 @@ export class FightScene extends g.Scene {
             (this.assets["alarm1"] as g.AudioAsset).play();
             if (this.game.vars.isAtsumaru) {
                 window.RPGAtsumaru.experimental.scoreboards.setRecord(1, this.game.vars.gameState.score);
-                this.setTimeout(()=>{
+                this.setTimeout(() => {
                     window.RPGAtsumaru.experimental.scoreboards.display(1);
-                },3000);
+                }, 3000);
             }
         }
         this.timeLabel.text = this.remainingTime.toString();
