@@ -99,12 +99,6 @@
 			"systemId": "sound",
 			"duration": 1490
 		},
-		"alarm2": {
-			"type": "audio",
-			"path": "audio/alarm2",
-			"systemId": "sound",
-			"duration": 1910
-		},
 		"Background": {
 			"type": "script",
 			"path": "script/Background.js",

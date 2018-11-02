@@ -48,7 +48,7 @@ export class FightScene extends g.Scene {
     constructor() {
         super({
             game: g.game,
-            assetIds: Seikimatsu.enemies.concat(["hit1", "hit2", "hit3", "alarm1", "alarm2"])
+            assetIds: Seikimatsu.enemies.concat(["hit1", "hit2", "hit3", "alarm1"])
         });
 
         this.enemyLayer = new g.E({scene: this});
@@ -61,7 +61,6 @@ export class FightScene extends g.Scene {
         this.enemyFactory = new Seikimatsu(this);
         this.chanceFactory = new NorthStartFist(g.game, this);
 
-        /*
         if (this.game.vars.isAtsumaru) {
             this.loaded.add(() => {
                 this.initialize();
@@ -76,9 +75,7 @@ export class FightScene extends g.Scene {
                 }
             });
         }
-*/
 
-        this.initialize(this.DEFAULT_REMAINING_TIME);
     }
 
     initialize(timeLimit: number = this.DEFAULT_REMAINING_TIME): void {
@@ -121,7 +118,7 @@ export class FightScene extends g.Scene {
 
     mainLoop(): void {
         if (this.sceneTime === 30 * 5) {
-            (this.assets["alarm2"] as g.AudioAsset).play();
+            (this.assets["alarm1"] as g.AudioAsset).play();
             this.isRunning = true;
             this.remainingTime = this.timeLimit;
         }
