@@ -71,11 +71,14 @@ export class FightScene extends g.Scene {
                     if (e.data.parameters) {
                         this.parameters = e.data.parameters;
                     }
-                    this.initialize(e.data.parameters.gameTimeLimit * 30);
+                    if (e.data.parameters.gameTimeLimit) {
+                        this.initialize(e.data.parameters.gameTimeLimit * 30);
+                    } else {
+                        this.initialize();
+                    }
                 }
             });
         }
-
     }
 
     initialize(timeLimit: number = this.DEFAULT_REMAINING_TIME): void {
